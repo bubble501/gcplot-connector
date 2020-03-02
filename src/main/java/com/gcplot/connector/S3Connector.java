@@ -6,6 +6,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.google.common.base.Strings;
@@ -34,11 +35,11 @@ public class S3Connector {
                 .withClientConfiguration(new ClientConfiguration()
                         .withMaxConnections(Runtime.getRuntime().availableProcessors() * 10)
                         .withMaxErrorRetry(50));
-        if (!Strings.isNullOrEmpty(region)) {
-            builder = builder.withRegion(region);
-        }
+       if (!Strings.isNullOrEmpty(region)) {
+           builder = builder.withRegion(region);
+       }
         if (!Strings.isNullOrEmpty(endpoint)) {
-            builder = builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, null));
+            builder = builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, Regions.US_EAST_1.name()));
         }
         this.client = builder.build();
     }

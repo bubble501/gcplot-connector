@@ -56,7 +56,7 @@ public class Bootstrap {
     @Parameter(names = { "-token" }, required = true, validateValueWith = EmptyStringValidator.class, description = "Token in GCPlot platform")
     private String token;
     @Parameter(names = { "-https" }, description = "Whether to use secure connections.")
-    private boolean isHttps = true;
+    private boolean isHttps = false;
     @Parameter(names = { "-extension" }, description = "GC Log Files extension suffix (before .N number for rotating logs)")
     private String extension = ".log";
     @Parameter(names = { "-reaload_config_ms" }, description = "Config reload period in milliseconds.")
@@ -378,10 +378,11 @@ public class Bootstrap {
         S3Connector connector = new S3Connector();
         if (sourceType == SourceType.INTERNAL) {
             JsonNode internalSettings = call("/connector/internal/settings", Collections.<String, String>emptyMap());
-            connector.setBucket(internalSettings.get("s3_bucket").asText());
-            connector.setRegion(internalSettings.get("s3_region").asText());
-            connector.setAccessKey(internalSettings.get("s3_access_key").asText());
-            connector.setSecretKey(internalSettings.get("s3_secret_key").asText());
+           connector.setEndpoint(internalSettings.get("s3_endpoint").asText());
+           connector.setBucket(internalSettings.get("s3_bucket").asText());
+           connector.setRegion(internalSettings.get("s3_region").asText());
+           connector.setAccessKey(internalSettings.get("s3_access_key").asText());
+           connector.setSecretKey(internalSettings.get("s3_secret_key").asText());
             basePath = normPath(internalSettings.get("s3_base_path").asText());
         } else if (sourceType == SourceType.S3) {
             connector.setBucket(props.getProperty("s3.bucket", ""));
@@ -414,7 +415,8 @@ public class Bootstrap {
 
     public JsonNode call(String path, Map<String, String> params) throws Exception {
         URIBuilder builder = new URIBuilder()
-                .setScheme(isHttps ? "https" : "http")
+                // .setScheme(isHttps ? "https" : "http")
+                .setScheme("http")
                 .setHost(gcpHost)
                 .setPath(path)
                 .setParameter("token", token);
